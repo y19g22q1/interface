@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Prompt & Code Studio</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- ═══════════════════════════════════════════════════════════════════
+             TAB NAVIGATION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="tab1">
+                ✏️ Prompt Reformat
+            </button>
+            <button class="tab-btn" data-tab="tab2">
+                🎨 Generate Code
+            </button>
+            <button class="tab-btn" data-tab="tab3">
+                🚀 Smart Generate
+            </button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             TAB 1 — PROMPT REFORMAT
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="tab-content active" id="tab1">
+            <div class="main-grid">
+                <!-- Controls -->
+                <div class="panel controls-panel">
+                    <h1>✏️ AI Prompt Rewriter</h1>
+                    <p class="subtitle">
+                        Turn vague ideas into detailed UI/UX prompts
+                    </p>
+
+                    <!-- System Prompt -->
+                    <div class="section">
+                        <div class="section-title">⚙️ System Prompt</div>
+                        <textarea id="tab1-systemPrompt"></textarea>
+                    </div>
+
+                    <!-- User Prompt -->
+                    <div class="section">
+                        <div class="section-title">💬 Your Idea</div>
+                        <textarea id="tab1-userPrompt"
+                            placeholder="e.g. build a restaurant app, todo list, e-commerce store...">
+build a restaurant app</textarea>
+                    </div>
+
+                    <!-- Model Parameters -->
+                    <div class="section">
+                        <div class="section-title">🎛️ Model Parameters</div>
+                        <div class="param-row">
+                            <div>
+                                <label>Max Tokens</label>
+                                <input type="number" id="tab1-maxTokens" value="1024" min="64" max="2048" />
+                            </div>
+                            <div>
+                                <label>Temperature</label>
+                                <input type="number" id="tab1-temperature" value="0.7" min="0" max="2" step="0.05" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Panel -->
+                    <div class="metrics-panel" id="tab1-metricsPanel">
+                        <div class="metrics-panel-title">
+                            <span>📊 Output Metrics</span>
+                        </div>
+                        <div class="metrics-grid">
+                            <!-- Code Correctness -->
+                            <div class="metric-card">
+                                <span>🛠️</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Code Correctness (CC)</span>
+                                    <span class="metric-desc">Is output a valid HTML document?</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab1-metric-cc">-</span>
+                            </div>
+
+                            <!-- Task Alignment -->
+                            <div class="metric-card">
+                                <span>🎯</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Task Alignment Score (TAS)</span>
+                                    <span class="metric-desc">% of prompt keywords in output</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab1-metric-tas">-</span>
+                            </div>
+
+                            <!-- Structural Consistency -->
+                            <div class="metric-card">
+                                <span>🏗️</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Structural Consistency (SC)</span>
+                                    <span class="metric-desc">% of target elements in output</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab1-metric-sc">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Editable Fields -->
+                        <div class="metric-input-section">
+                            <span class="metric-input-label">📝 TAS Keywords (Comma Separated)</span>
+                            <textarea class="metric-textarea" id="tab1-metrics-tasKeywords"
+                                placeholder="Keywords to match (auto-extracted from prompt)..."></textarea>
+                        </div>
+
+                        <div class="metric-input-section">
+                            <span class="metric-input-label">📝 SC Elements (Comma Separated)</span>
+                            <textarea class="metric-textarea" id="tab1-metrics-scElements"
+                                placeholder="e.g. app, screens, colors">app, screens, colors</textarea>
+                        </div>
+
+                        <div class="recalc-btn-container">
+                            <button class="recalc-btn" id="tab1-recalcBtn" disabled>
+                                🔁 Recalculate Metrics
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button class="primary-btn" id="tab1-generateBtn">
+                        ✨ Rewrite Prompt
+                    </button>
+
+                    <div id="tab1-loading" class="loading">
+                        <div class="spinner"></div>
+                        <p id="tab1-loadingText">Rewriting...</p>
+                    </div>
+                </div>
+
+                <!-- Output -->
+                <div class="panel output-panel">
+                    <div class="preview-section">
+                        <div class="preview-header">
+                            <div class="preview-title">
+                                Rewritten Prompt
+                            </div>
+                            <div class="action-buttons">
+                                <button class="action-btn" id="tab1-copyBtn" style="display: none">
+                                    📋 Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="preview-container" id="tab1-previewContainer">
+                            <div class="empty-state" id="tab1-emptyState">
+                                <p style="font-size: 48px">✏️</p>
+                                <p>
+                                    Your rewritten prompt will appear here
+                                </p>
+                                <p style="
+                                            font-size: 12px;
+                                            margin-top: 10px;
+                                        ">
+                                    Configure settings and click Rewrite
+                                    Prompt
+                                </p>
+                            </div>
+                            <div class="output-text" id="tab1-outputText"></div>
+                        </div>
+
+                        <div class="token-footer" id="tab1-tokenFooter">
+                            <span id="tab1-tokenCount">0</span> tokens
+                            generated
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             TAB 2 — GENERATE CODE
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="tab-content" id="tab2">
+            <div class="main-grid">
+                <!-- Controls -->
+                <div class="panel controls-panel">
+                    <h1>🎨 AI UI Generator</h1>
+                    <p class="subtitle">
+                        Generate full UI code from a prompt
+                    </p>
+
+                    <!-- Pexels API Key (hidden by default) -->
+                    <div class="api-note" id="tab2-apiNote" style="display: none">
+                        🔑 Get free Pexels API key at
+                        <a href="https://www.pexels.com/api/" target="_blank">pexels.com/api</a>
+                    </div>
+
+                    <div class="section" id="tab2-pexelsSection" style="display: none">
+                        <div class="section-title">🖼️ Pexels API Key</div>
+                        <input type="text" id="tab2-pexelsApiKey" placeholder="Your Pexels API key here..."
+                            value="D9DYXwzTmFjtAn7uhhxW6rQE1IDaA1Z8yoOHpLn2GO13kI9KpnXxbNa4" />
+                    </div>
+
+
+
+                    <!-- System Prompt -->
+                    <div class="section">
+                        <div class="section-title">⚙️ System Prompt</div>
+                        <textarea id="tab2-systemPrompt"></textarea>
+                    </div>
+
+                    <!-- User Prompt -->
+                    <div class="section">
+                        <div class="section-title">💬 User Prompt</div>
+                        <textarea id="tab2-userPrompt" placeholder="Describe the UI you want...">
+build a restaurant app</textarea>
+                    </div>
+
+                    <!-- Model Parameters -->
+                    <div class="section">
+                        <div class="section-title">🎛️ Model Parameters</div>
+                        <div class="param-row">
+                            <div>
+                                <label>Max Tokens</label>
+                                <input type="number" id="tab2-maxTokens" value="13000" min="100" max="16384" />
+                            </div>
+                            <div>
+                                <label>Temperature</label>
+                                <input type="number" id="tab2-temperature" value="0.3" min="0" max="2" step="0.1" />
+                            </div>
+                        </div>
+                        <div class="param-row" style="display: none">
+                            <div>
+                                <label>Top P</label>
+                                <input type="number" id="tab2-topP" value="0.95" min="0" max="1" step="0.05" />
+                            </div>
+                            <div>
+                                <label>Top K</label>
+                                <input type="number" id="tab2-topK" value="50" min="0" max="100" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Panel -->
+                    <div class="metrics-panel" id="tab2-metricsPanel">
+                        <div class="metrics-panel-title">
+                            <span>📊 Output Metrics</span>
+                        </div>
+                        <div class="metrics-grid">
+                            <!-- Code Correctness -->
+                            <div class="metric-card">
+                                <span>🛠️</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Code Correctness (CC)</span>
+                                    <span class="metric-desc">Is output a valid HTML document?</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab2-metric-cc">-</span>
+                            </div>
+
+                            <!-- Task Alignment -->
+                            <div class="metric-card">
+                                <span>🎯</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Task Alignment Score (TAS)</span>
+                                    <span class="metric-desc">% of prompt keywords in output</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab2-metric-tas">-</span>
+                            </div>
+
+                            <!-- Structural Consistency -->
+                            <div class="metric-card">
+                                <span>🏗️</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Structural Consistency (SC)</span>
+                                    <span class="metric-desc">% of target elements in output</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab2-metric-sc">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Editable Fields -->
+                        <div class="metric-input-section">
+                            <span class="metric-input-label">📝 TAS Keywords (Comma Separated)</span>
+                            <textarea class="metric-textarea" id="tab2-metrics-tasKeywords"
+                                placeholder="Keywords to match (auto-extracted from prompt)..."></textarea>
+                        </div>
+
+                        <div class="metric-input-section">
+                            <span class="metric-input-label">📝 SC Elements (Comma Separated)</span>
+                            <textarea class="metric-textarea" id="tab2-metrics-scElements"
+                                placeholder="e.g. form, button, div">form, button, div</textarea>
+                        </div>
+
+                        <div class="recalc-btn-container">
+                            <button class="recalc-btn" id="tab2-recalcBtn" disabled>
+                                🔁 Recalculate Metrics
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button class="primary-btn" id="tab2-generateBtn">
+                        🚀 Generate UI
+                    </button>
+
+                    <div id="tab2-loading" class="loading">
+                        <div class="spinner"></div>
+                        <p id="tab2-loadingText">Generating...</p>
+                    </div>
+                </div>
+
+                <!-- Output -->
+                <div class="panel output-panel">
+                    <div class="preview-section">
+                        <div class="preview-header">
+                            <div class="preview-title">Live Preview</div>
+                            <div class="action-buttons">
+                                <button class="action-btn" id="tab2-mobileBtn" style="display: none">
+                                    📱 Mobile
+                                </button>
+                                <button class="action-btn" id="tab2-downloadBtn" style="display: none">
+                                    💾 Download
+                                </button>
+                                <button class="action-btn" id="tab2-copyBtn" style="display: none">
+                                    📋 Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="preview-container" id="tab2-previewContainer">
+                            <div class="empty-state" id="tab2-emptyState">
+                                <p style="font-size: 48px">🎨</p>
+                                <p>Your UI will appear here</p>
+                                <p style="
+                                            font-size: 12px;
+                                            margin-top: 10px;
+                                        ">
+                                    Configure settings and click Generate
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             TAB 3 — SMART GENERATE (Rewrite → Generate)
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="tab-content" id="tab3">
+            <div class="main-grid">
+                <!-- Controls -->
+                <div class="panel controls-panel">
+                    <h1>🚀 Smart Generate</h1>
+                    <p class="subtitle">
+                        Rewrite your idea → Auto-generate UI code
+                    </p>
+
+                    <!-- Pipeline Status -->
+                    <div class="pipeline-status" id="tab3-pipelineStatus">
+                        <div class="pipeline-step" id="tab3-step1">
+                            <div class="step-icon">1</div>
+                            <div class="step-label">Rewrite Prompt</div>
+                            <div class="step-detail" id="tab3-step1Detail">
+                                Waiting...
+                            </div>
+                        </div>
+                        <div class="pipeline-step" id="tab3-step2">
+                            <div class="step-icon">2</div>
+                            <div class="step-label">Generate UI Code</div>
+                            <div class="step-detail" id="tab3-step2Detail">
+                                Waiting...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rewritten Prompt (intermediate output) -->
+                    <div class="intermediate-output" id="tab3-intermediate">
+                        <div class="intermediate-label">
+                            Rewritten Prompt (Step 1 Output)
+                        </div>
+                        <textarea class="intermediate-text" id="tab3-intermediateText" readonly
+                            placeholder="Output will appear here..."></textarea>
+                    </div>
+
+                    <!-- Pexels API Key (hidden by default) -->
+                    <div class="section" id="tab3-pexelsSection" style="display: none">
+                        <div class="section-title">🖼️ Pexels API Key</div>
+                        <input type="text" id="tab3-pexelsApiKey" placeholder="Your Pexels API key here..."
+                            value="D9DYXwzTmFjtAn7uhhxW6rQE1IDaA1Z8yoOHpLn2GO13kI9KpnXxbNa4" />
+                    </div>
+
+
+
+                    <!-- Rewriter System Prompt -->
+                    <div class="section">
+                        <div class="section-title">
+                            ⚙️ Rewriter System Prompt
+                        </div>
+                        <textarea id="tab3-rewriterPrompt"></textarea>
+                    </div>
+
+                    <!-- Coder System Prompt -->
+                    <div class="section">
+                        <div class="section-title">
+                            ⚙️ Coder System Prompt
+                        </div>
+                        <textarea id="tab3-coderPrompt"></textarea>
+                    </div>
+
+                    <!-- User Prompt -->
+                    <div class="section">
+                        <div class="section-title">💬 Your Idea</div>
+                        <textarea id="tab3-userPrompt"
+                            placeholder="e.g. build a restaurant app, todo list, e-commerce store...">
+build a restaurant app</textarea>
+                    </div>
+
+                    <!-- Model Parameters -->
+                    <div class="section">
+                        <div class="section-title">🎛️ Model Parameters</div>
+                        <div class="param-row">
+                            <div>
+                                <label>Rewriter Max Tokens</label>
+                                <input type="number" id="tab3-rewriterMaxTokens" value="1024" min="64" max="2048" />
+                            </div>
+                            <div>
+                                <label>Rewriter Temperature</label>
+                                <input type="number" id="tab3-rewriterTemperature" value="0.7" min="0" max="2"
+                                    step="0.05" />
+                            </div>
+                        </div>
+                        <div class="param-row">
+                            <div>
+                                <label>Coder Max Tokens</label>
+                                <input type="number" id="tab3-coderMaxTokens" value="13000" min="100" max="16384" />
+                            </div>
+                            <div>
+                                <label>Coder Temperature</label>
+                                <input type="number" id="tab3-coderTemperature" value="0.3" min="0" max="2"
+                                    step="0.1" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Panel -->
+                    <div class="metrics-panel" id="tab3-metricsPanel">
+                        <div class="metrics-panel-title">
+                            <span>📊 Output Metrics</span>
+                        </div>
+                        <div class="metrics-grid">
+                            <!-- Code Correctness -->
+                            <div class="metric-card">
+                                <span>🛠️</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Code Correctness (CC)</span>
+                                    <span class="metric-desc">Is output a valid HTML document?</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab3-metric-cc">-</span>
+                            </div>
+
+                            <!-- Task Alignment -->
+                            <div class="metric-card">
+                                <span>🎯</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Task Alignment Score (TAS)</span>
+                                    <span class="metric-desc">% of prompt keywords in output</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab3-metric-tas">-</span>
+                            </div>
+
+                            <!-- Structural Consistency -->
+                            <div class="metric-card">
+                                <span>🏗️</span>
+                                <div class="metric-info">
+                                    <span class="metric-name">Structural Consistency (SC)</span>
+                                    <span class="metric-desc">% of target elements in output</span>
+                                </div>
+                                <span class="metric-badge badge-neutral" id="tab3-metric-sc">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Editable Fields -->
+                        <div class="metric-input-section">
+                            <span class="metric-input-label">📝 TAS Keywords (Comma Separated)</span>
+                            <textarea class="metric-textarea" id="tab3-metrics-tasKeywords"
+                                placeholder="Keywords to match (auto-extracted from prompt)..."></textarea>
+                        </div>
+
+                        <div class="metric-input-section">
+                            <span class="metric-input-label">📝 SC Elements (Comma Separated)</span>
+                            <textarea class="metric-textarea" id="tab3-metrics-scElements"
+                                placeholder="e.g. form, button, div">form, button, div</textarea>
+                        </div>
+
+                        <div class="recalc-btn-container">
+                            <button class="recalc-btn" id="tab3-recalcBtn" disabled>
+                                🔁 Recalculate Metrics
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button class="primary-btn" id="tab3-generateBtn">
+                        🚀 Smart Generate
+                    </button>
+
+                    <div id="tab3-loading" class="loading">
+                        <div class="spinner"></div>
+                        <p id="tab3-loadingText">Generating...</p>
+                    </div>
+                </div>
+
+                <!-- Output -->
+                <div class="panel output-panel">
+                    <div class="preview-section">
+                        <div class="preview-header">
+                            <div class="preview-title">Live Preview</div>
+                            <div class="action-buttons">
+                                <button class="action-btn" id="tab3-mobileBtn" style="display: none">
+                                    📱 Mobile
+                                </button>
+                                <button class="action-btn" id="tab3-downloadBtn" style="display: none">
+                                    💾 Download
+                                </button>
+                                <button class="action-btn" id="tab3-copyBtn" style="display: none">
+                                    📋 Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="preview-container" id="tab3-previewContainer">
+                            <div class="empty-state" id="tab3-emptyState">
+                                <p style="font-size: 48px">🚀</p>
+                                <p>
+                                    Your smart-generated UI will appear here
+                                </p>
+                                <p style="
+                                            font-size: 12px;
+                                            margin-top: 10px;
+                                        ">
+                                    Enter your idea and click Smart Generate
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SCRIPTS — order matters: api first (shared), then tabs, then app
+        ═══════════════════════════════════════════════════════════════════ -->
+    <script src="js/config.js"></script>
+    <script src="js/metrics.js"></script>
+    <script src="js/ai-service.js"></script>
+    <script src="js/ui-helpers.js"></script>
+    <script src="js/tab1.js"></script>
+    <script src="js/tab2.js"></script>
+    <script src="js/tab3.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
