@@ -36,22 +36,9 @@ with the human checkpoint).
 │   │   └── stage2_system_prompt.txt
 │   ├── metrics.js         # Automated evaluation metrics: CC, TAS, SC
 │   └── ...                 # Pipeline / OpenRouter communication logic
-├── evaluation/
-│   ├── automated_prompts.md      # The 5 natural-language prompts used in the
-│   │                                automated evaluation (food delivery, medical
-│   │                                appointment scheduling, e-commerce, social
-│   │                                networking, productivity)
-│   ├── automated_results_raw.csv  # Raw per-run CC / TAS / SC scores (5 runs × 3 modes)
-│   └── maze_study/
-│       ├── study_definition.pdf    # Screenshot/export of the Maze task and survey blocks
-│       └── maze_export_summary.csv # Aggregated response distributions per item
 └── README.md
 ```
 
-> **Note to maintainers:** the exact paths above should be adjusted to match the
-> actual file layout of this repository. Please move/rename files as needed so
-> that this structure accurately reflects what is present, and remove this note
-> once verified.
 
 ## Running the Tool
 
@@ -75,29 +62,9 @@ the associated manuscript and are required to reproduce the reported behavior.
 
 ## Automated Evaluation
 
-- `evaluation/automated_prompts.md` lists the five natural-language prompts used
-  across the three interaction modes (5 runs each, 15 runs total).
-- `evaluation/automated_results_raw.csv` contains the raw Code Correctness (CC),
-  Task Alignment Score (TAS), and Structural Consistency (SC) values per run,
-  underlying the summary tables reported in the manuscript.
 - `js/metrics.js` contains the exact implementation of all three metrics, so that
   scores can be independently recomputed from generated HTML output.
 
-## Human Evaluation (Maze)
-
-- `evaluation/maze_study/study_definition.pdf` documents the study flow: the
-  live-website generation task, the task-completion check, the four perceptual
-  rating items (UX Relevance, Color Appropriateness, Navigation Ease, Creativity),
-  and the 10-item System Usability Scale (SUS), using Brooke's (1996) original
-  item wording.
-- `evaluation/maze_study/maze_export_summary.csv` contains the aggregated,
-  anonymized response distributions exported from Maze for each survey item.
-- The live Maze report is also available at:
-  `https://app.maze.co/report/UI-AI-model-testing/355y7mu17dv0y/intro`
-
-## License
-
-[TO COMPLETE: add a license, e.g. MIT for code, CC-BY for prompts/data, once decided.]
 
 ## Citation
 
